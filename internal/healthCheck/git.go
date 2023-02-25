@@ -4,16 +4,21 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strconv"
+	"strings"
+
+	"github.com/todaatsushi/twt/internal/utils"
 )
 
 func isRepo() bool {
-	isWorktree, err := exec.Command("git", "rev-parse", "--is-inside-work-tree").Output()
+	isRepo, err := exec.Command("git", "rev-parse", "--is-inside-work-tree").Output()
 	if err != nil {
-		log.Fatal("Error when checking worktree status", err)
+		log.Fatal("Error when checking repo status", err)
 		os.Exit(1)
 	}
-	return len(isWorktree) > 5
+
+	isRepoStr := strings.Trim(string(isRepo), "\n")
+	boolVal := utils.ParseBool(isRepoStr)
+	return boolVal
 }
 
 func IsBareRepo() bool {
@@ -28,10 +33,6 @@ func IsBareRepo() bool {
 		os.Exit(1)
 	}
 
-	boolVal, err := strconv.ParseBool(string(isWorktree))
-	if err != nil {
-		log.Fatal("Error when parsing worktree val")
-		os.Exit(1)
-	}
+	boolVal := utils.ParseBool(string(isWorktree))
 	return boolVal
 }
