@@ -1,22 +1,17 @@
 package healthcheck
 
 import (
-	"log"
-	"os"
-	"os/exec"
-
+	"github.com/go-cmd/cmd"
 	"github.com/todaatsushi/twt/internal/utils"
 )
 
 func isRepo() bool {
-	isRepo, err := exec.Command("git", "rev-parse", "--is-inside-work-tree").Output()
-	if err != nil {
-		log.Fatal("Error when checking repo status", err)
-		os.Exit(1)
-	}
-
-	isRepoStr := utils.SanatizeString(string(isRepo))
-	boolVal := utils.ParseBool(isRepoStr)
+	app := "git"
+	args := []string{"rev-parse", "--is-inside-work-tree"}
+	c := cmd.NewCmd(app, args...)
+	<-c.Start()
+	out := c.Status().Stdout[0]
+	boolVal := utils.ParseBool(out)
 	return boolVal
 }
 
