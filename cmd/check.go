@@ -8,8 +8,12 @@ import (
 )
 
 var healthCheck = &cobra.Command{
-	Use: "check",
+	Use:   "check",
+	Short: "Check if twt is ready to be run in this shell",
+	Long:  "twt needs to be run in a bare repo to use Git worktrees, and in a Tmux session.",
+	Args:  cobra.MatchAll(cobra.ExactArgs(0)),
 	Run: func(cmd *cobra.Command, args []string) {
+		// TODO - change println to be proper messaging
 		isRepo := health.InTmuxSession()
 		if isRepo {
 			fmt.Println("In tmux session")
