@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -11,18 +13,32 @@ import (
 	"github.com/todaatsushi/twt/internal/utils"
 )
 
-var goTree = &cobra.Command{
-	Use:  "go",
-	Args: cobra.MatchAll(cobra.ExactArgs(1)),
+var goToWorktree = &cobra.Command{
+	Use:   "go",
+	Short: "Gets or creates a Tmux session from a given branch.",
+	Long: `Given a branch name, either gets or creates a new Tmux session and creates
+	/ switches to that branch within that session. If the session already exists,
+	switches to it. Works for session names only if the session already exists.`,
+	Args: cobra.MatchAll(cobra.MaximumNArgs(2)),
 	Run: func(cmd *cobra.Command, args []string) {
 		checks.AssertReady()
+
+		flags := cmd.Flags()
+		switchSession, err := flags.GetBool("switch")
+		if err != nil {
+			log.Fatal("Couldn't fetch switch flag")
+			os.Exit(1)
+		}
 
 		branch := args[0]
 		sessionName := utils.SanitizeName(branch)
 		isNewSession := !tmux.HasSession(sessionName)
 
 		if !isNewSession {
-			tmux.SwitchToSession(sessionName)
+			log.Printf("Session %s already exists.", sessionName)
+			if switchSession {
+				tmux.SwitchToSession(sessionName)
+			}
 			return
 		}
 
@@ -54,9 +70,15 @@ var goTree = &cobra.Command{
 		changeToNewTreeCmd := fmt.Sprintf("cd %s", sessionName)
 		tmux.SendKeys(sessionName, changeToNewTreeCmd, "Enter")
 		tmux.SendKeys(sessionName, "clear", "Enter")
+
+		if switchSession {
+			tmux.SwitchToSession(sessionName)
+		}
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(goTree)
+	rootCmd.AddCommand(goToWorktree)
+
+	goToWorktree.Flags().BoolP("switch", "s", false, "Switch to session after creation / retrieval.")
 }
