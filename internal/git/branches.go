@@ -12,7 +12,7 @@ func IsNewBranch(branch string) bool {
 	c := cmd.NewCmd(app, args...)
 	<-c.Start()
 	out := c.Status().Stdout
-	return len(out) > 0
+	return len(out) == 0
 }
 
 func IsCheckedOut(branch string) bool {
