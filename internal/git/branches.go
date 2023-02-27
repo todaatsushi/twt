@@ -22,3 +22,17 @@ func HasWorktree(branch string) bool {
 	out := c.Status().Stdout
 	return len(out) > 0
 }
+
+func DeleteBranch(branch string, force bool) {
+	app := "git"
+
+	deleteFlag := "-d"
+	if force {
+		deleteFlag = "-D"
+	}
+
+	args := []string{"branch", deleteFlag, branch}
+
+	c := cmd.NewCmd(app, args...)
+	<-c.Start()
+}
