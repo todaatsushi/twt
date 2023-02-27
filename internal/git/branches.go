@@ -15,7 +15,7 @@ func IsNewBranch(branch string) bool {
 	return len(out) == 0
 }
 
-func IsCheckedOut(branch string) bool {
+func WorktreeExists(branch string) bool {
 	grepCmd := fmt.Sprintf("git worktree list | grep %s", branch)
 	c := cmd.NewCmd("bash", "-c", grepCmd)
 	<-c.Start()
