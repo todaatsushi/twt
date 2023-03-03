@@ -58,7 +58,7 @@ var goToWorktree = &cobra.Command{
 		backToBaseDirCmd := fmt.Sprintf("cd %s", baseDir)
 		tmux.SendKeys(sessionName, backToBaseDirCmd, "Enter")
 
-		branchIsNew := !git.HasBranch(branch)
+		branchIsNew := !git.HasBranch(branch, false)
 		if branchIsNew {
 			newWorktreeCmd := fmt.Sprintf("git worktree add %s -b %s", sessionName, branch)
 			tmux.SendKeys(sessionName, newWorktreeCmd, "Enter")
