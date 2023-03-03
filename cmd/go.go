@@ -31,7 +31,7 @@ var goToWorktree = &cobra.Command{
 		}
 
 		branch := args[0]
-		sessionName := utils.SanitizeName(branch)
+		sessionName := utils.GenerateSessionNameFromBranch(branch)
 		isNewSession := !tmux.HasSession(sessionName)
 
 		if !isNewSession {
