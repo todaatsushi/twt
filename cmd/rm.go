@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"log"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/todaatsushi/twt/internal/checks"
@@ -18,22 +19,7 @@ var removeWorktree = &cobra.Command{
 		checks.AssertReady()
 
 		branch := args[0]
-
-		branchExistsAndCheckedOut := git.HasBranch(branch, true)
-		worktreeExists := git.HasWorktree(branch)
-		if !branchExistsAndCheckedOut {
-			log.Fatalf("Branch %s doesn't exist, or isn't checked out", branch)
-		}
-		if !worktreeExists {
-			log.Fatalf("Can't delete worktree %s as it doesn't exist", branch)
-		}
-
 		sessionName := utils.GenerateSessionNameFromBranch(branch)
-		needToSwitchSession := tmux.HasSession(sessionName) && tmux.GetCurrentSessionName() == sessionName && len(tmux.ListSessions(false)) > 1
-		if needToSwitchSession {
-			// Find any other session + switch
-		}
-		tmux.KillSession(sessionName)
 
 		flags := cmd.Flags()
 		deleteBranch, err := flags.GetBool("delete-branch")
@@ -45,7 +31,28 @@ var removeWorktree = &cobra.Command{
 			log.Fatal("Couldn't check force flag")
 		}
 
+		// Git cleanup
+		branchExistsAndCheckedOut := git.HasBranch(branch, true)
+		worktreeExists := git.HasWorktree(branch)
+		if !branchExistsAndCheckedOut {
+			log.Fatalf("Branch %s doesn't exist, or isn't checked out", branch)
+		}
+		if !worktreeExists {
+			log.Fatalf("Can't delete worktree %s as it doesn't exist", branch)
+		}
 		git.RemoveWorktree(sessionName, branch, force, deleteBranch)
+
+		// Tmux cleanup
+		existingSessions := tmux.ListSessions(true)
+		needToSwitchSession := tmux.HasSession(sessionName) && tmux.GetCurrentSessionName() == sessionName && len(existingSessions) > 1
+		if needToSwitchSession {
+			newSession := strings.ReplaceAll(existingSessions[1], "\"", "")
+			if !tmux.HasSession(newSession) {
+				log.Fatal("Session doesn't exist")
+			}
+			tmux.SwitchToSession(newSession)
+		}
+		tmux.KillSession(sessionName)
 	},
 }
 
