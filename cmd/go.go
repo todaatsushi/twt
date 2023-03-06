@@ -34,6 +34,11 @@ var goToWorktree = &cobra.Command{
 		sessionName := utils.GenerateSessionNameFromBranch(branch)
 		isNewSession := !tmux.HasSession(sessionName)
 
+		baseDir, err := git.GetBaseDir()
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		if !isNewSession {
 			log.Printf("Session %s already exists.", sessionName)
 			if switchSession {
@@ -45,7 +50,6 @@ var goToWorktree = &cobra.Command{
 		tmux.NewSession(branch, sessionName)
 		worktreeExists := git.HasWorktree(branch)
 		if worktreeExists {
-			baseDir := git.GetBaseDir()
 			changeDirCmd := fmt.Sprintf("cd %s/%s", baseDir, sessionName)
 			tmux.SendKeys(sessionName, changeDirCmd, "Enter")
 			tmux.SendKeys(sessionName, "clear", "Enter")
@@ -54,7 +58,6 @@ var goToWorktree = &cobra.Command{
 		}
 
 		// Change to worktree base to create the worktree here
-		baseDir := git.GetBaseDir()
 		backToBaseDirCmd := fmt.Sprintf("cd %s", baseDir)
 		tmux.SendKeys(sessionName, backToBaseDirCmd, "Enter")
 
