@@ -18,7 +18,10 @@ var goToWorktree = &cobra.Command{
 	Short: "Gets or creates a Tmux session from a given branch.",
 	Long: `Given a branch name, either gets or creates a new Tmux session and creates
 	/ switches to that branch within that session. If the session already exists,
-	switches to it. Works for session names only if the session already exists.`,
+	switches to it. Works for session names only if the session already exists.
+
+	Also switches to a new session if a worktree exists (ie. the branch is checked out)
+	`,
 	Args: cobra.MatchAll(cobra.MaximumNArgs(2)),
 	Run: func(cmd *cobra.Command, args []string) {
 		checks.AssertReady()
