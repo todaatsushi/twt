@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	health "github.com/todaatsushi/twt/internal/healthCheck"
+	"github.com/todaatsushi/twt/internal/checks"
 )
 
 var healthCheck = &cobra.Command{
@@ -14,15 +14,15 @@ var healthCheck = &cobra.Command{
 	Args:  cobra.MatchAll(cobra.ExactArgs(0)),
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO - change println to be proper messaging
-		isRepo := health.InTmuxSession()
+		isRepo := checks.InTmuxSession()
 		if isRepo {
 			fmt.Println("In tmux session")
 		} else {
 			fmt.Println("Not in tmux session")
 		}
 
-		inGitDir := health.InGitDir()
-		inWorktree := health.IsInWorktree()
+		inGitDir := checks.InGitDir()
+		inWorktree := checks.IsInWorktree()
 
 		gitValid := inWorktree || inGitDir
 		if gitValid {
