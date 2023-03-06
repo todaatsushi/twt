@@ -9,6 +9,9 @@
 git clone --bare <repo> <dir>
 ```
 
+Move the executable from `build` into your PATH, or add the path to the executable to
+your PATH.
+
 2. Check ability to run command
 ```
 twt check
