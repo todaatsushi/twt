@@ -9,6 +9,21 @@
 git clone --bare <repo> <dir>
 ```
 
+2. Check ability to run command
+```
+twt check
+```
+
+3. To checkout any branch in a new session
+```
+twt go <branch>
+```
+
+3. To remove a session and / or worktree
+```
+twt rm <branch>
+```
+
 # Why
 ## Git worktrees
 
