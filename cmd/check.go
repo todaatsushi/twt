@@ -21,11 +21,14 @@ var healthCheck = &cobra.Command{
 			fmt.Println("Not in tmux session")
 		}
 
-		isBareRepo := health.IsBareRepo()
-		if isBareRepo {
-			fmt.Println("In bare repo")
+		inGitDir := health.InGitDir()
+		inWorktree := health.IsInWorktree()
+
+		gitValid := inWorktree || inGitDir
+		if gitValid {
+			fmt.Println("In worktree or git folder")
 		} else {
-			fmt.Println("Not in bare repo")
+			fmt.Printf("Not in worktree or git folder: worktree (%t) git folder (%t)", inWorktree, inGitDir)
 		}
 
 	},

@@ -2,24 +2,25 @@ package healthcheck
 
 import (
 	"log"
-	"os"
 )
 
 func AssertTmux() {
 	if inTmux := InTmuxSession(); !inTmux {
 		log.Fatal("Not in tmux")
-		os.Exit(1)
 	}
 }
 
-func AssertWorkTree() {
-	if inWorktree := IsBareRepo(); !inWorktree {
-		log.Fatal("Not in worktree")
-		os.Exit(1)
+func AssertGit() {
+	isWorktree := IsInWorktree()
+	inGitDir := InGitDir()
+
+	if valid := isWorktree || inGitDir; !valid {
+		log.Fatal("Git status invalid - must be in a .git folder (worktree base) or inside a worktree")
 	}
+
 }
 
 func AssertReady() {
-	AssertWorkTree()
+	AssertGit()
 	AssertTmux()
 }
