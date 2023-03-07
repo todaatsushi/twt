@@ -20,7 +20,6 @@ func GetBaseDir() (string, error) {
 		out := c.Status().Stdout
 		if len(out) == 0 {
 			log.Fatal("Couldn't get root git worktree dir - is this a git dir?")
-			os.Exit(1)
 		}
 		return filepath.Dir(out[0]), nil
 	}

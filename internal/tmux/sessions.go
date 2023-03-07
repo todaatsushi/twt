@@ -2,7 +2,6 @@ package tmux
 
 import (
 	"log"
-	"os"
 
 	"github.com/go-cmd/cmd"
 )
@@ -37,7 +36,6 @@ func GetCurrentSessionName() string {
 	out := c.Status().Stdout
 	if len(out) == 0 {
 		log.Fatal("Couldn't fetch current tmux session name")
-		os.Exit(1)
 	}
 	return out[0]
 
@@ -56,7 +54,6 @@ func ListSessions(justNames bool) []string {
 	out := c.Status().Stdout
 	if len(out) == 0 {
 		log.Fatal("Couldn't fetch current tmux session name")
-		os.Exit(1)
 	}
 	return out
 }

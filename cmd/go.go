@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/spf13/cobra"
 
@@ -30,7 +29,6 @@ var goToWorktree = &cobra.Command{
 		switchSession, err := flags.GetBool("switch")
 		if err != nil {
 			log.Fatal("Couldn't fetch switch flag")
-			os.Exit(1)
 		}
 
 		branch := args[0]
