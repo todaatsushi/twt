@@ -1,26 +1,42 @@
 package checks
 
 import (
-	"log"
+	"errors"
+	"fmt"
+
+	"github.com/fatih/color"
 )
 
-func AssertTmux() {
+func AssertTmux() error {
 	if inTmux := InTmuxSession(); !inTmux {
-		log.Fatal("Not in tmux")
+		return errors.New("Not in tmux session")
 	}
+	return nil
 }
 
-func AssertGit() {
+func AssertGit() error {
 	isWorktree := IsInWorktree()
 	inGitDir := InGitDir()
 
 	if valid := isWorktree || inGitDir; !valid {
-		log.Fatal("Git status invalid - must be in a .git folder (worktree base) or inside a worktree")
+		return errors.New("\u2717 Git status invalid - must be in a .git folder (worktree base) or inside a worktree")
 	}
-
+	return nil
 }
 
-func AssertReady() {
-	AssertGit()
-	AssertTmux()
+func AssertReady() bool {
+	shouldCancel := false
+
+	gitErr := AssertGit()
+	tmuxErr := AssertTmux()
+	errs := [2]error{gitErr, tmuxErr}
+
+	for _, err := range errs {
+		if err != nil {
+			msg := fmt.Sprint(err)
+			color.Red(msg)
+			shouldCancel = true
+		}
+	}
+	return shouldCancel
 }

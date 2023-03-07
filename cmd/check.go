@@ -1,8 +1,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/todaatsushi/twt/internal/checks"
 )
@@ -13,22 +12,23 @@ var healthCheck = &cobra.Command{
 	Long:  "twt needs to be run in a bare repo to use Git worktrees, and in a Tmux session.",
 	Args:  cobra.MatchAll(cobra.ExactArgs(0)),
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO - change println to be proper messaging
-		isRepo := checks.InTmuxSession()
-		if isRepo {
-			fmt.Println("In tmux session")
+		color.White("\u270F Checking tmux status: must be in a session.")
+		inTmux := checks.InTmuxSession()
+		if inTmux {
+			color.Green(" - in tmux session \u2713")
 		} else {
-			fmt.Println("Not in tmux session")
+			color.Red(" - not in tmux session \u2717")
 		}
 
+		color.White("\u270F Checking git status: must be in a session.")
 		inGitDir := checks.InGitDir()
 		inWorktree := checks.IsInWorktree()
-
 		gitValid := inWorktree || inGitDir
+
 		if gitValid {
-			fmt.Println("In worktree or git folder")
+			color.Green(" - in either a git bare repo or worktree \u2713")
 		} else {
-			fmt.Printf("Not in worktree or git folder: worktree (%t) git folder (%t)", inWorktree, inGitDir)
+			color.Red(" - not either a git bare repo or worktree \u2717")
 		}
 
 	},

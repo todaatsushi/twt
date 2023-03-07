@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 
 	"github.com/todaatsushi/twt/internal/checks"
@@ -23,7 +24,11 @@ var goToWorktree = &cobra.Command{
 	`,
 	Args: cobra.MatchAll(cobra.MaximumNArgs(2)),
 	Run: func(cmd *cobra.Command, args []string) {
-		checks.AssertReady()
+		shouldCancel := checks.AssertReady()
+		if shouldCancel {
+			color.Red("Error when trying to run command, aborting.")
+			return
+		}
 
 		flags := cmd.Flags()
 		switchSession, err := flags.GetBool("switch")

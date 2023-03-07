@@ -4,6 +4,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/todaatsushi/twt/internal/checks"
 	"github.com/todaatsushi/twt/internal/git"
@@ -16,7 +17,11 @@ var removeWorktree = &cobra.Command{
 	Short: "Remove a git worktree, and optionally the linked branch.",
 	Args:  cobra.MatchAll(cobra.ExactArgs(1)),
 	Run: func(cmd *cobra.Command, args []string) {
-		checks.AssertReady()
+		shouldCancel := checks.AssertReady()
+		if shouldCancel {
+			color.Red("Error when trying to run command, aborting.")
+			return
+		}
 
 		branch := args[0]
 		sessionName := utils.GenerateSessionNameFromBranch(branch)
