@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -33,7 +32,8 @@ var goToWorktree = &cobra.Command{
 		flags := cmd.Flags()
 		switchSession, err := flags.GetBool("switch")
 		if err != nil {
-			log.Fatal("Couldn't fetch switch flag")
+			color.Red("Couldn't fetch switch session flag.")
+			return
 		}
 
 		branch := args[0]
@@ -42,11 +42,12 @@ var goToWorktree = &cobra.Command{
 
 		baseDir, err := git.GetBaseDir()
 		if err != nil {
-			log.Fatal(err)
+			color.Red(fmt.Sprint(err))
+			return
 		}
 
 		if !isNewSession {
-			log.Printf("Session %s already exists.", sessionName)
+			color.Cyan("Session %s already exists.", sessionName)
 			if switchSession {
 				tmux.SwitchToSession(sessionName)
 			}

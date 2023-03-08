@@ -2,7 +2,6 @@ package git
 
 import (
 	"errors"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -19,7 +18,7 @@ func GetBaseDir() (string, error) {
 	if checks.IsInWorktree() {
 		out := c.Status().Stdout
 		if len(out) == 0 {
-			log.Fatal("Couldn't get root git worktree dir - is this a git dir?")
+			return "", errors.New("Couldn't get root git worktree dir - is this a git dir?")
 		}
 		return filepath.Dir(out[0]), nil
 	}

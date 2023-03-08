@@ -1,7 +1,7 @@
 package tmux
 
 import (
-	"log"
+	"errors"
 
 	"github.com/go-cmd/cmd"
 )
@@ -27,7 +27,7 @@ func KillSession(name string) {
 	<-c.Start()
 }
 
-func GetCurrentSessionName() string {
+func GetCurrentSessionName() (string, error) {
 	app := "tmux"
 	args := []string{"display-message", "-p", "#S"}
 	c := cmd.NewCmd(app, args...)
@@ -35,13 +35,13 @@ func GetCurrentSessionName() string {
 
 	out := c.Status().Stdout
 	if len(out) == 0 {
-		log.Fatal("Couldn't fetch current tmux session name")
+		return "", errors.New("Couldn't fetch current tmux session name")
 	}
-	return out[0]
+	return out[0], nil
 
 }
 
-func ListSessions(justNames bool) []string {
+func ListSessions(justNames bool) ([]string, error) {
 	app := "tmux"
 	args := []string{"list-sessions"}
 	if justNames {
@@ -53,9 +53,9 @@ func ListSessions(justNames bool) []string {
 
 	out := c.Status().Stdout
 	if len(out) == 0 {
-		log.Fatal("Couldn't fetch current tmux session name")
+		return []string{}, errors.New("Couldn't fetch current tmux session name")
 	}
-	return out
+	return out, nil
 }
 
 func HasSession(name string) bool {

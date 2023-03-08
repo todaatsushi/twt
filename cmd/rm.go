@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"log"
+	"fmt"
 	"strings"
 
 	"github.com/fatih/color"
@@ -29,31 +29,46 @@ var removeWorktree = &cobra.Command{
 		flags := cmd.Flags()
 		deleteBranch, err := flags.GetBool("delete-branch")
 		if err != nil {
-			log.Fatal("Couldn't check delete-branch flag")
+			color.Red("Couldn't check delete-branch flag")
+			return
 		}
 		force, err := flags.GetBool("force")
 		if err != nil {
-			log.Fatal("Couldn't check force flag")
+			color.Red("Couldn't check force flag")
+			return
 		}
 
 		// Git cleanup
 		branchExistsAndCheckedOut := git.HasBranch(branch, true)
 		worktreeExists := git.HasWorktree(branch)
 		if !branchExistsAndCheckedOut {
-			log.Fatalf("Branch %s doesn't exist, or isn't checked out", branch)
+			color.Red("Branch %s doesn't exist, or isn't checked out", branch)
+			return
 		}
 		if !worktreeExists {
-			log.Fatalf("Can't delete worktree %s as it doesn't exist", branch)
+			color.Red("Can't delete worktree %s as it doesn't exist", branch)
+			return
 		}
 		git.RemoveWorktree(sessionName, branch, force, deleteBranch)
 
 		// Tmux cleanup
-		existingSessions := tmux.ListSessions(true)
-		needToSwitchSession := tmux.HasSession(sessionName) && tmux.GetCurrentSessionName() == sessionName && len(existingSessions) > 1
+		existingSessions, err := tmux.ListSessions(true)
+		if err != nil {
+			color.Red(fmt.Sprint(err))
+			return
+		}
+		currentSession, err := tmux.GetCurrentSessionName()
+		if err != nil {
+			color.Red(fmt.Sprint(err))
+			return
+		}
+
+		needToSwitchSession := tmux.HasSession(sessionName) && currentSession == sessionName && len(existingSessions) > 1
 		if needToSwitchSession {
 			newSession := strings.ReplaceAll(existingSessions[1], "\"", "")
 			if !tmux.HasSession(newSession) {
-				log.Fatal("Session doesn't exist")
+				color.Red("Session doesn't exist")
+				return
 			}
 			tmux.SwitchToSession(newSession)
 		}
