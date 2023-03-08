@@ -14,7 +14,7 @@ import (
 
 var removeWorktree = &cobra.Command{
 	Use:   "rm",
-	Short: "Remove a git worktree, and optionally the linked branch.",
+	Short: "Remove a git worktree, tmux session, and optionally the linked branch.",
 	Args:  cobra.MatchAll(cobra.ExactArgs(1)),
 	Run: func(cmd *cobra.Command, args []string) {
 		shouldCancel := checks.AssertReady()

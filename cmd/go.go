@@ -19,7 +19,7 @@ var goToWorktree = &cobra.Command{
 	/ switches to that branch within that session. If the session already exists,
 	switches to it. Works for session names only if the session already exists.
 
-	Also switches to a new session if a worktree exists (ie. the branch is checked out)
+	Also switches to a new session if a worktree exists (ie. the branch is checked out).
 	`,
 	Args: cobra.MatchAll(cobra.MaximumNArgs(2)),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -47,7 +47,7 @@ var goToWorktree = &cobra.Command{
 		}
 
 		if !isNewSession {
-			color.Cyan("Session %s already exists.", sessionName)
+			color.Cyan("Session %s already exists. Please delete / rename the existing session.", sessionName)
 			if switchSession {
 				tmux.SwitchToSession(sessionName)
 			}
