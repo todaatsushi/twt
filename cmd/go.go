@@ -21,7 +21,7 @@ var goToWorktree = &cobra.Command{
 
 	Also switches to a new session if a worktree exists (ie. the branch is checked out).
 	`,
-	Args: cobra.MatchAll(cobra.MaximumNArgs(2)),
+	Args: cobra.MatchAll(cobra.ExactArgs(1)),
 	Run: func(cmd *cobra.Command, args []string) {
 		shouldCancel := checks.AssertReady()
 		if shouldCancel {
