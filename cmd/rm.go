@@ -62,10 +62,16 @@ var removeWorktree = &cobra.Command{
 			color.Red(fmt.Sprint(err))
 			return
 		}
+		possibleDestinations := []string{}
+		for _, session := range existingSessions {
+			if session != currentSession {
+				possibleDestinations = append(possibleDestinations, session)
+			}
+		}
 
-		needToSwitchSession := tmux.HasSession(sessionName) && currentSession == sessionName && len(existingSessions) > 1
+		needToSwitchSession := tmux.HasSession(sessionName) && currentSession == sessionName && len(possibleDestinations) > 0
 		if needToSwitchSession {
-			newSession := strings.ReplaceAll(existingSessions[1], "\"", "")
+			newSession := strings.ReplaceAll(possibleDestinations[0], "\"", "")
 			if !tmux.HasSession(newSession) {
 				color.Red("Session doesn't exist")
 				return
