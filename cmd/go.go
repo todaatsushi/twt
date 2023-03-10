@@ -23,7 +23,7 @@ var goToWorktree = &cobra.Command{
 
 	Also switches to a new session if a worktree exists (ie. the branch is checked out).
 	`,
-	Args: cobra.MatchAll(cobra.ExactArgs(1)),
+	Args: cobra.MatchAll(cobra.ExactArgs(0)),
 	Run: func(cmd *cobra.Command, args []string) {
 		shouldCancel := checks.AssertReady()
 		if shouldCancel {
@@ -37,8 +37,12 @@ var goToWorktree = &cobra.Command{
 			color.Red("Couldn't fetch switch session flag.")
 			return
 		}
+		branch, err := flags.GetString("branch")
+		if err != nil || branch == "" {
+			color.Red("Couldn't fetch target branch.")
+			return
+		}
 
-		branch := args[0]
 		sessionName := utils.GenerateSessionNameFromBranch(branch)
 		isNewSession := !tmux.HasSession(sessionName)
 
@@ -93,4 +97,5 @@ func init() {
 	rootCmd.AddCommand(goToWorktree)
 
 	goToWorktree.Flags().BoolP("switch", "s", false, "Switch to session after creation / retrieval.")
+	goToWorktree.Flags().StringP("branch", "b", "", "Branch of which to create a new worktree + session.")
 }

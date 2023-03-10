@@ -19,12 +19,12 @@ twt check
 
 3. To checkout any branch in a new session
 ```
-twt go <branch>
+twt go -b <branch>
 ```
 
 3. To remove a session and / or worktree
 ```
-twt rm <branch>
+twt rm -b <branch>
 ```
 
 # Why

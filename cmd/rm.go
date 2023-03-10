@@ -15,7 +15,7 @@ import (
 var removeWorktree = &cobra.Command{
 	Use:   "rm",
 	Short: "Remove a git worktree, tmux session, and optionally the linked branch.",
-	Args:  cobra.MatchAll(cobra.ExactArgs(1)),
+	Args:  cobra.MatchAll(cobra.ExactArgs(0)),
 	Run: func(cmd *cobra.Command, args []string) {
 		shouldCancel := checks.AssertReady()
 		if shouldCancel {
@@ -23,10 +23,15 @@ var removeWorktree = &cobra.Command{
 			return
 		}
 
-		branch := args[0]
+		flags := cmd.Flags()
+		branch, err := flags.GetString("branch")
+		if err != nil || branch == "" {
+			color.Red("Couldn't fetch target branch.")
+			return
+		}
+
 		sessionName := utils.GenerateSessionNameFromBranch(branch)
 
-		flags := cmd.Flags()
 		deleteBranch, err := flags.GetBool("delete-branch")
 		if err != nil {
 			color.Red("Couldn't check delete-branch flag")
@@ -86,4 +91,5 @@ func init() {
 	rootCmd.AddCommand(removeWorktree)
 	removeWorktree.Flags().BoolP("delete-branch", "d", false, "Remove branch as well as the worktree")
 	removeWorktree.Flags().BoolP("force", "f", false, "Delete the worktree &| branch regardless of unstaged files")
+	removeWorktree.Flags().StringP("branch", "b", "", "Branch of which to create a new worktree + session.")
 }
