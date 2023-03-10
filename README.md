@@ -27,6 +27,59 @@ twt go -b <branch>
 twt rm -b <branch>
 ```
 
+# Usage
+`twt` has four commands:
+ - `go`
+ - `rm`
+ - `common`
+ - `check`
+
+## `go`
+
+Change to a session for a branch:
+
+ - If the session exists, switch to it. Otherwise create one from the branch name.
+ - If the worktree exists, check it out, otherwise create one.
+ - If the branch exists, check it out, otherwise create one.
+
+Must be run from within a bare repo or worktree, and within a tmux session.
+
+## `rm`
+
+Cleanup a worktree/session by removing both, if they exist. Options to delete and force
+delete the branch/worktree.
+
+Must be run from within a bare repo or worktree, and within a tmux session.
+
+## Common files
+
+In case your project has assets to be shared across branches (e.g. `.env` vars, docker
+compose processes, etc.), they can be stored in a common files directory which lives in
+the base dir (ie. the bare repo).
+
+Common files are also useful for optionally running setup scripts when a worktree and
+session starts. Those can be written and placed there for the command to automatically
+pick it up and run.
+
+### `common`
+ie. `twt common`
+
+Creates / switches to a session in the common files directory.
+
+### `init`
+ie. `twt common init`
+
+In the case where a common files directory doesn't exist in the bare repo, create one
+with the directories needed to run the setup scripts, along with an initial template.
+
+## `check`
+
+Check the viability of using `twt` features:
+
+ - Is this run in a bare repo or in a worktree
+ - Is this run in a tmux session
+ - Are common files set up
+
 # Why
 ## Git worktrees
 
