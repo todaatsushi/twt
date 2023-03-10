@@ -77,7 +77,7 @@ var healthCheck = &cobra.Command{
 	Use:   "check",
 	Short: "Check if twt is ready to be run in this shell.",
 	Long: `
-	twt needs to be run in a bare repo to use Git worktrees, and in a Tmux session.
+	twt needs to be run in a bare repo to use Git worktrees, and in a tmux session.
 
 	Check also optional usage of common files, which can be used to configure a shared
 	state between worktrees.

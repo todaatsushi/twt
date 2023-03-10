@@ -14,7 +14,7 @@ import (
 
 var goToWorktree = &cobra.Command{
 	Use:   "go",
-	Short: "Gets or creates a Tmux session from a given branch.",
+	Short: "Gets or creates a tmux session from a given branch.",
 	Long: `Given a branch name, either gets or creates a new Tmux session and creates
 	/ switches to that branch within that session.
 
