@@ -84,7 +84,7 @@ var commonInit = &cobra.Command{
 
 		color.Cyan("\n\nSetting up scripts dirs for each command.\n\n")
 		// Command scripts for each command
-		cmdDirs := []string{"go", "rm"}
+		cmdDirs := []string{"go"}
 		scripts := []string{"post.sh"}
 		for _, dir := range cmdDirs {
 			newPath := fmt.Sprintf("%s/%s", path, dir)

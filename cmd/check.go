@@ -50,7 +50,7 @@ func checkCommonFilesDir() {
 	}
 
 	color.Cyan("\nChecking that scripts dir contains a dir for valid commands, and that they have supported scripts.")
-	cmdsToCheck := []string{"go", "rm"}
+	cmdsToCheck := []string{"go"}
 	scriptsToCheck := []string{"post.sh"}
 
 	for i, c := range cmdsToCheck {
