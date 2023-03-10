@@ -53,10 +53,7 @@ var goToWorktree = &cobra.Command{
 		}
 
 		if !isNewSession {
-			color.Cyan("Session %s already exists. Please delete / rename the existing session.", sessionName)
-			if switchSession {
-				tmux.SwitchToSession(sessionName)
-			}
+			tmux.SwitchToSession(sessionName)
 			return
 		}
 
