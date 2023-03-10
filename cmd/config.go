@@ -34,6 +34,9 @@ var common = &cobra.Command{
 
 	This command just creates the directory in the bare repo dir, and the 'scripts' folder
 	which let's you define post worktree start scripts e.g. setting env vars.
+
+	Currently supporting post command scripts only, named 'post.sh' within each command's
+	dir in 'scripts'. Run 'twt check' to see where files should live.
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		baseDir, err := git.GetBaseDir()

@@ -16,8 +16,10 @@ var goToWorktree = &cobra.Command{
 	Use:   "go",
 	Short: "Gets or creates a Tmux session from a given branch.",
 	Long: `Given a branch name, either gets or creates a new Tmux session and creates
-	/ switches to that branch within that session. If the session already exists,
-	switches to it. Works for session names only if the session already exists.
+	/ switches to that branch within that session.
+
+	If the session already exists, switches to it regardless of if a git worktree exists
+	or not. If this isn't desired, rename / delete the existing session.
 
 	Also switches to a new session if a worktree exists (ie. the branch is checked out).
 	`,
