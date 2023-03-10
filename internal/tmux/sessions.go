@@ -13,7 +13,7 @@ func SwitchToSession(name string) {
 	<-c.Start()
 }
 
-func NewSession(branchName, cleanBranchName string) {
+func NewSession(cleanBranchName string) {
 	app := "tmux"
 	args := []string{"new-session", "-s", cleanBranchName, "-d"}
 	c := cmd.NewCmd(app, args...)

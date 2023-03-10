@@ -60,7 +60,7 @@ var goToWorktree = &cobra.Command{
 			return
 		}
 
-		tmux.NewSession(branch, sessionName)
+		tmux.NewSession(sessionName)
 		worktreeExists := git.HasWorktree(branch)
 		if worktreeExists {
 			changeDirCmd := fmt.Sprintf("cd %s/%s", baseDir, sessionName)
