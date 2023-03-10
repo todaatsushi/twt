@@ -87,7 +87,7 @@ var common = &cobra.Command{
 				filePath := fmt.Sprintf("%s/%s", newPath, fileName)
 
 				if _, err := os.Stat(filePath); !os.IsNotExist(err) {
-					color.Yellow(fmt.Sprintf("Dir %s exists - skipping.", dir))
+					color.Yellow(fmt.Sprintf("File %s exists - skipping.", dir))
 					continue
 				}
 

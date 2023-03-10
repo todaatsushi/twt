@@ -7,7 +7,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "twt",
-	Short: "Manage tmux sessions & windows based on Git worktrees",
+	Short: "Manage tmux sessions & windows based on Git worktrees.",
 }
 
 func Execute() {
