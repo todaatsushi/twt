@@ -85,6 +85,16 @@ var goToWorktree = &cobra.Command{
 		tmux.SendKeys(sessionName, changeToNewTreeCmd, "Enter")
 		tmux.SendKeys(sessionName, "clear", "Enter")
 
+		// Execute post init scripts
+		noScripts, err := flags.GetBool("no-scripts")
+		if err != nil {
+			color.Red("Couldn't fetch the run scripts flag")
+			return
+		}
+		if !noScripts {
+			utils.ExecuteScriptInSession(sessionName, "go", "post.sh")
+		}
+
 		if switchSession {
 			tmux.SwitchToSession(sessionName)
 		}
@@ -96,4 +106,5 @@ func init() {
 
 	goToWorktree.Flags().BoolP("switch", "s", false, "Switch to session after creation / retrieval.")
 	goToWorktree.Flags().StringP("branch", "b", "", "Branch of which to create a new worktree + session.")
+	goToWorktree.Flags().BoolP("no-scripts", "N", false, "Don't run any scripts in the common files dir if they exist for this command.")
 }
