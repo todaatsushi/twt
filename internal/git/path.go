@@ -2,7 +2,6 @@ package git
 
 import (
 	"errors"
-	"os"
 	"path/filepath"
 
 	"github.com/go-cmd/cmd"
@@ -14,17 +13,16 @@ func GetBaseDir() (string, error) {
 	args := []string{"rev-parse", "--show-toplevel"}
 	c := cmd.NewCmd(app, args...)
 	<-c.Start()
+	out := c.Status().Stdout
+	if len(out) == 0 {
+		return "", errors.New("Couldn't get root git worktree dir - is this a git dir?")
+	}
 
 	if checks.IsInWorktree() {
-		out := c.Status().Stdout
-		if len(out) == 0 {
-			return "", errors.New("Couldn't get root git worktree dir - is this a git dir?")
-		}
 		return filepath.Dir(out[0]), nil
 	}
 	if checks.InGitDir() {
-		dir, err := os.Getwd()
-		return dir, err
+		return out[0], nil
 	}
 	return "", errors.New("Couldn't fetch git base dir. Base dir is returned when command is run inside a worktree or the git dir (ie. the base of the worktree).")
 }
