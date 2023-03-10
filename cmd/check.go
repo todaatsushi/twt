@@ -35,13 +35,14 @@ func checkGit() {
 
 func checkCommonFilesDir() {
 	// Common files dir is optional so in yellow when files not found
-	color.White("\u270F Checking common files setup.")
+	color.White("\n\u270F Checking common files setup.")
 	baseDir, err := git.GetBaseDir()
 	if err != nil {
 		color.Red(fmt.Sprint(err))
 		return
 	}
 
+	color.Cyan("\nChecking common dir exists in base dir and that it has a scripts dir.")
 	path := baseDir
 	toCheck := []string{"common", "scripts"}
 	for _, dir := range toCheck {
@@ -53,6 +54,7 @@ func checkCommonFilesDir() {
 		}
 	}
 
+	color.Cyan("\nChecking that scripts dir contains a dir for valid commands, and that they have supported scripts.")
 	cmdsToCheck := []string{"go", "rm"}
 	scriptsToCheck := []string{"post.sh"}
 	for _, dir := range cmdsToCheck {
@@ -66,7 +68,7 @@ func checkCommonFilesDir() {
 		for _, fileName := range scriptsToCheck {
 			filePath := fmt.Sprintf("%s/%s", newPath, fileName)
 			if _, err := os.Stat(filePath); !os.IsNotExist(err) {
-				color.Green(fmt.Sprintf(" - %s exists in %s.", dir, filePath))
+				color.Green(fmt.Sprintf(" - Script %s exists in %s.", fileName, filePath))
 			} else {
 				color.Yellow(fmt.Sprintf(" - Script %s missing for command %s.", fileName, newPath))
 			}
@@ -85,8 +87,11 @@ var healthCheck = &cobra.Command{
 	`,
 	Args: cobra.MatchAll(cobra.ExactArgs(0)),
 	Run: func(cmd *cobra.Command, args []string) {
+		color.White("Key conditions checks.")
 		checkTmux()
 		checkGit()
+
+		color.White("\n\nOptional common files dir checks.")
 		checkCommonFilesDir()
 	},
 }
