@@ -91,11 +91,16 @@ var common = &cobra.Command{
 					continue
 				}
 
-				if _, err := os.Create(filePath); err != nil {
+				if f, err := os.Create(filePath); err != nil {
 					color.Red(fmt.Sprintf("File %s couldn't be created: %s.", filePath, err))
+					f.Close()
 					return
 				} else {
 					color.Green(fmt.Sprintf("Successfully created %s", filePath))
+					os.Chmod(filePath, 0700)
+					f.WriteString("#!/bin/bash\n\n")
+					f.WriteString("echo \"Enter your scripts here\"")
+					f.Close()
 				}
 			}
 		}
