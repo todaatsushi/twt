@@ -20,7 +20,7 @@ var healthCheck = &cobra.Command{
 			color.Red(" - not in tmux session \u2717")
 		}
 
-		color.White("\u270F Checking git status: must be in a session.")
+		color.White("\u270F Checking git status: must be in a worktree or .git dir.")
 		inGitDir := checks.InGitDir()
 		inWorktree := checks.IsInWorktree()
 		gitValid := inWorktree || inGitDir
