@@ -43,6 +43,7 @@ var goToWorktree = &cobra.Command{
 			return
 		}
 
+		// Switch to session if exists
 		sessionName := utils.GenerateSessionNameFromBranch(branch)
 		isNewSession := !tmux.HasSession(sessionName)
 
