@@ -7,6 +7,8 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/todaatsushi/twt/internal/git"
+	"github.com/todaatsushi/twt/internal/tmux"
+	"github.com/todaatsushi/twt/internal/utils"
 )
 
 const NEW_DIR_PERM = 0700
@@ -14,13 +16,27 @@ const NEW_DIR_PERM = 0700
 var commonBase = &cobra.Command{
 	Use:   "common",
 	Short: "Configure twt utils.",
-	Long: `
-	Customise twt to your individual needs:
-
-	- common: shared resources across sessions + worktrees e.g. post init scripts.
-	`,
+	Long:  "Create a new session or switch to the session starting in the common files dir.",
 	Run: func(cmd *cobra.Command, args []string) {
-		color.Red("Please specify a sub command to configure.")
+		sessionName := "common"
+		hasCommonSession := tmux.HasSession(sessionName)
+
+		if hasCommonSession {
+			tmux.SwitchToSession(sessionName)
+			return
+		}
+
+		tmux.NewSession(sessionName)
+
+		commonFilesDir, err := utils.GetCommonFilesDirPath()
+		if err != nil {
+			color.Red(fmt.Sprint(err))
+			return
+		}
+		cdToCommonCommand := fmt.Sprintf("cd %s", commonFilesDir)
+		tmux.SendKeys(sessionName, cdToCommonCommand, "Enter")
+		tmux.SendKeys(sessionName, "clear", "Enter")
+		tmux.SwitchToSession(sessionName)
 	},
 }
 
