@@ -43,7 +43,7 @@ var commonBase = &cobra.Command{
 var commonInit = &cobra.Command{
 	Use:   "init",
 	Args:  cobra.MatchAll(cobra.ExactArgs(0)),
-	Short: "Shared resources across sessions + worktrees e.g. post init scripts.",
+	Short: "Create common files in the bare repo, with templates for scripts.",
 	Long: `
 	'common' is a dir you can use in the bare repo dir that can house shared assets for
 	your project, e.g. a common .env file and / or startup scripts.
