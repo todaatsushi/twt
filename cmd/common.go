@@ -11,8 +11,8 @@ import (
 
 const NEW_DIR_PERM = 0700
 
-var config = &cobra.Command{
-	Use:   "config",
+var commonBase = &cobra.Command{
+	Use:   "common",
 	Short: "Configure twt utils.",
 	Long: `
 	Customise twt to your individual needs:
@@ -24,8 +24,8 @@ var config = &cobra.Command{
 	},
 }
 
-var common = &cobra.Command{
-	Use:   "common",
+var commonInit = &cobra.Command{
+	Use:   "init",
 	Args:  cobra.MatchAll(cobra.ExactArgs(0)),
 	Short: "Shared resources across sessions + worktrees e.g. post init scripts.",
 	Long: `
@@ -112,8 +112,8 @@ var common = &cobra.Command{
 
 func init() {
 	// Register root
-	rootCmd.AddCommand(config)
+	rootCmd.AddCommand(commonBase)
 
 	// Config topics
-	config.AddCommand(common)
+	commonBase.AddCommand(commonInit)
 }
