@@ -7,7 +7,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/todaatsushi/twt/internal/checks"
-	"github.com/todaatsushi/twt/internal/git"
+	"github.com/todaatsushi/twt/internal/utils"
 )
 
 func checkTmux() {
@@ -35,44 +35,41 @@ func checkGit() {
 
 func checkCommonFilesDir() {
 	// Common files dir is optional so in yellow when files not found
-	color.White("\n\u270F Checking common files setup.")
-	baseDir, err := git.GetBaseDir()
-	if err != nil {
-		color.Red(fmt.Sprint(err))
-		return
-	}
+	color.White("\u270F Checking common files setup.")
+	pathFuncs := []func() (string, error){utils.GetCommonFilesDirPath, utils.GetScriptsDirPath}
+	checking := []string{"common", "scripts"}
 
 	color.Cyan("\nChecking common dir exists in base dir and that it has a scripts dir.")
-	path := baseDir
-	toCheck := []string{"common", "scripts"}
-	for _, dir := range toCheck {
-		path = fmt.Sprintf("%s/%s", path, dir)
-		if _, err := os.Stat(path); !os.IsNotExist(err) {
-			color.Green(fmt.Sprintf(" - %s exists in %s.", dir, path))
+	for i, f := range pathFuncs {
+		dir, _ := f()
+		if _, err := os.Stat(dir); !os.IsNotExist(err) {
+			color.Green(fmt.Sprintf(" - %s exists.", dir))
 		} else {
-			color.Yellow(fmt.Sprintf(" - %s doesn't exist. Expected in %s.", dir, path))
+			color.Yellow(fmt.Sprintf(" - %s doesn't exist.", checking[i]))
 		}
 	}
 
 	color.Cyan("\nChecking that scripts dir contains a dir for valid commands, and that they have supported scripts.")
 	cmdsToCheck := []string{"go", "rm"}
 	scriptsToCheck := []string{"post.sh"}
-	for _, dir := range cmdsToCheck {
-		newPath := fmt.Sprintf("%s/%s", path, dir)
-		if _, err := os.Stat(newPath); !os.IsNotExist(err) {
-			color.Green(fmt.Sprintf(" - %s exists in %s.", dir, newPath))
+
+	for i, c := range cmdsToCheck {
+		dir, _ := utils.GetScriptsDirPathForCommand(c)
+		if _, err := os.Stat(dir); !os.IsNotExist(err) {
+			color.Green(fmt.Sprintf(" - %s exists.", dir))
 		} else {
-			color.Yellow(fmt.Sprintf(" - Dir for command %s doesn't exist. Expected in %s.", dir, newPath))
+			color.Yellow(fmt.Sprintf(" - Dir for command %s doesn't exist.", cmdsToCheck[i]))
 		}
 
 		for _, fileName := range scriptsToCheck {
-			filePath := fmt.Sprintf("%s/%s", newPath, fileName)
+			filePath := fmt.Sprintf("%s/%s", dir, fileName)
 			if _, err := os.Stat(filePath); !os.IsNotExist(err) {
-				color.Green(fmt.Sprintf(" - Script %s exists in %s.", fileName, filePath))
+				color.Green(fmt.Sprintf(" - Script %s exists for command %s.", fileName, c))
 			} else {
-				color.Yellow(fmt.Sprintf(" - Script %s missing for command %s.", fileName, newPath))
+				color.Yellow(fmt.Sprintf(" - Script %s missing for command %s.", fileName, c))
 			}
 		}
+		fmt.Println()
 	}
 }
 
@@ -87,11 +84,11 @@ var healthCheck = &cobra.Command{
 	`,
 	Args: cobra.MatchAll(cobra.ExactArgs(0)),
 	Run: func(cmd *cobra.Command, args []string) {
-		color.White("Key conditions checks.")
+		color.White("\n\nKey conditions checks.")
 		checkTmux()
 		checkGit()
 
-		color.White("\n\nOptional common files dir checks.")
+		color.White("\n\nOptional conditions checks.")
 		checkCommonFilesDir()
 	},
 }
