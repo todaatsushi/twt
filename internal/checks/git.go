@@ -24,6 +24,7 @@ func InGitDir() bool {
 }
 
 func IsInWorktree() bool {
+	// aka in a branch
 	app := "git"
 	args := []string{"rev-parse", "--is-inside-work-tree"}
 	c := cmd.NewCmd(app, args...)
