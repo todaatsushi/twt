@@ -9,7 +9,7 @@ import (
 
 func AssertTmux() error {
 	if inTmux := InTmuxSession(); !inTmux {
-		return errors.New("Not in tmux session")
+		return errors.New("\u2717 Not in tmux session")
 	}
 	return nil
 }

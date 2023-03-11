@@ -85,7 +85,7 @@ var healthCheck = &cobra.Command{
 	`,
 	Args: cobra.MatchAll(cobra.ExactArgs(0)),
 	Run: func(cmd *cobra.Command, args []string) {
-		color.White("\n\nKey conditions checks.")
+		color.White("Key conditions checks.")
 		checkTmux()
 		checkGit()
 
