@@ -18,13 +18,17 @@ func AssertGit() error {
 	isWorktree := IsInWorktree()
 	inGitDir := InGitDir()
 
-	if valid := isWorktree || inGitDir; !valid {
-		return errors.New("\u2717 Git status invalid - must be in a .git folder (worktree base) or inside a worktree")
+	inGit := isWorktree && inGitDir
+	usingBareRepo := IsUsingBareRepo()
+
+	if valid := inGit && usingBareRepo; !valid {
+		return errors.New("\u2717 Git status invalid - must be in a .git folder (worktree base) or inside a worktree, and in a bare repository.")
 	}
 	return nil
 }
 
 func AssertReady() bool {
+	// Init here instead of return in the loop to show all messages
 	shouldCancel := false
 
 	gitErr := AssertGit()

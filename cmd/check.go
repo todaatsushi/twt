@@ -24,9 +24,10 @@ func checkGit() {
 	color.White("\u270F Checking git status: must be in a worktree or .git dir.")
 	inGitDir := checks.InGitDir()
 	inWorktree := checks.IsInWorktree()
+	inBareRepo := checks.IsUsingBareRepo()
 	gitValid := inWorktree || inGitDir
 
-	if gitValid {
+	if gitValid && inBareRepo {
 		color.Green(" - in either a git bare repo or worktree \u2713")
 	} else {
 		color.Red(" - not either a git bare repo or worktree \u2717")
