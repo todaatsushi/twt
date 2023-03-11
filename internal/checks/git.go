@@ -39,3 +39,11 @@ func IsInWorktree() bool {
 	}
 	return false
 }
+
+func IsUsingBareRepo() bool {
+	grepCmd := "git worktree list | grep \\(bare\\)"
+	c := cmd.NewCmd("bash", "-c", grepCmd)
+	<-c.Start()
+	out := c.Status().Stdout
+	return len(out) > 0
+}
