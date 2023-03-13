@@ -18,7 +18,7 @@ func AssertGit() error {
 	isWorktree := IsInWorktree()
 	inGitDir := InGitDir()
 
-	inGit := isWorktree && inGitDir
+	inGit := isWorktree || inGitDir
 	usingBareRepo := IsUsingBareRepo()
 
 	if valid := inGit && usingBareRepo; !valid {
