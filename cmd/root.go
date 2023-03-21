@@ -11,6 +11,8 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
+
 	err := rootCmd.Execute()
 	if err != nil {
 		color.Red("Error when running cmd.")
