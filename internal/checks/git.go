@@ -3,16 +3,11 @@ package checks
 import (
 	"strconv"
 
-	"github.com/go-cmd/cmd"
+	"github.com/todaatsushi/twt/internal/command"
 )
 
 func InGitDir() bool {
-	app := "git"
-	args := []string{"rev-parse", "--is-inside-git-dir"}
-
-	c := cmd.NewCmd(app, args...)
-	<-c.Start()
-	out := c.Status().Stdout
+	out, _ := command.Run("git", "rev-parse", "--is-inside-git-dir")
 
 	if len(out) > 0 {
 		insideGitDir := out[0]
@@ -24,12 +19,7 @@ func InGitDir() bool {
 }
 
 func IsInWorktree() bool {
-	// aka in a branch
-	app := "git"
-	args := []string{"rev-parse", "--is-inside-work-tree"}
-	c := cmd.NewCmd(app, args...)
-	<-c.Start()
-	out := c.Status().Stdout
+	out, _ := command.Run("git", "rev-parse", "--is-inside-work-tree")
 
 	if len(out) > 0 {
 		insideGitWorktree := out[0]
@@ -41,9 +31,6 @@ func IsInWorktree() bool {
 }
 
 func IsUsingBareRepo() bool {
-	grepCmd := "git worktree list | grep \\(bare\\)"
-	c := cmd.NewCmd("bash", "-c", grepCmd)
-	<-c.Start()
-	out := c.Status().Stdout
+	out, _ := command.Run("bash", "-c", "git worktree list | grep \\(bare\\)")
 	return len(out) > 0
 }
