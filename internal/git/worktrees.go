@@ -1,6 +1,8 @@
 package git
 
-import "github.com/go-cmd/cmd"
+import (
+	"github.com/todaatsushi/twt/internal/command"
+)
 
 func RemoveWorktree(name, branch string, force, deleteBranch bool) {
 	app := "git"
@@ -8,8 +10,7 @@ func RemoveWorktree(name, branch string, force, deleteBranch bool) {
 	if force {
 		args = append(args, "--force")
 	}
-	c := cmd.NewCmd(app, args...)
-	<-c.Start()
+	command.Run(app, args...)
 
 	if deleteBranch {
 		DeleteBranch(branch, force)

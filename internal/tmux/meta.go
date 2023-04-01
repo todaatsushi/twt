@@ -1,10 +1,10 @@
 package tmux
 
-import "github.com/go-cmd/cmd"
+import (
+	"github.com/todaatsushi/twt/internal/command"
+)
 
 func SendKeys(session string, toSend ...string) {
-	app := "tmux"
 	args := append([]string{"send-keys", "-t", session}, toSend...)
-	c := cmd.NewCmd(app, args...)
-	<-c.Start()
+	command.Run("tmux", args...)
 }

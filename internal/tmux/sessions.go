@@ -3,37 +3,23 @@ package tmux
 import (
 	"errors"
 
-	"github.com/go-cmd/cmd"
+	"github.com/todaatsushi/twt/internal/command"
 )
 
 func SwitchToSession(name string) {
-	app := "tmux"
-	args := []string{"switch", "-t", name}
-	c := cmd.NewCmd(app, args...)
-	<-c.Start()
+	command.Run("tmux", "switch", "-t", name)
 }
 
 func NewSession(cleanBranchName string) {
-	app := "tmux"
-	args := []string{"new-session", "-s", cleanBranchName, "-d"}
-	c := cmd.NewCmd(app, args...)
-	<-c.Start()
+	command.Run("tmux", "new-session", "-s", cleanBranchName, "-d")
 }
 
 func KillSession(name string) {
-	app := "tmux"
-	args := []string{"kill-session", "-t", name}
-	c := cmd.NewCmd(app, args...)
-	<-c.Start()
+	command.Run("tmux", "kill-session", "-t", name)
 }
 
 func GetCurrentSessionName() (string, error) {
-	app := "tmux"
-	args := []string{"display-message", "-p", "#S"}
-	c := cmd.NewCmd(app, args...)
-	<-c.Start()
-
-	out := c.Status().Stdout
+	out, _ := command.Run("tmux", "display-message", "-p", "#S")
 	if len(out) == 0 {
 		return "", errors.New("Couldn't fetch current tmux session name")
 	}
@@ -42,16 +28,13 @@ func GetCurrentSessionName() (string, error) {
 }
 
 func ListSessions(justNames bool) ([]string, error) {
-	app := "tmux"
 	args := []string{"list-sessions"}
 	if justNames {
 		fetchNameOpts := []string{"-F", "\"#{session_name}\""}
 		args = append(args, fetchNameOpts...)
 	}
-	c := cmd.NewCmd(app, args...)
-	<-c.Start()
+	out, _ := command.Run("tmux", args...)
 
-	out := c.Status().Stdout
 	if len(out) == 0 {
 		return []string{}, errors.New("Couldn't fetch current tmux session name")
 	}
@@ -59,13 +42,7 @@ func ListSessions(justNames bool) ([]string, error) {
 }
 
 func HasSession(name string) bool {
-	app := "tmux"
-	args := []string{"has-session", "-t", name}
-
-	c := cmd.NewCmd(app, args...)
-	<-c.Start()
-	stderr := c.Status().Stderr
-
+	_, stderr := command.Run("tmux", "has-session", "-t", name)
 	return len(stderr) == 0
 
 }

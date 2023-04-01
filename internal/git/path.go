@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/go-cmd/cmd"
 	"github.com/todaatsushi/twt/internal/checks"
+	"github.com/todaatsushi/twt/internal/command"
 )
 
 func getGitDir() (string, error) {
@@ -16,10 +16,8 @@ func getGitDir() (string, error) {
 func getBaseFromWorktree() (string, error) {
 	app := "git"
 	args := []string{"rev-parse", "--show-toplevel"}
-	c := cmd.NewCmd(app, args...)
-	<-c.Start()
-	out := c.Status().Stdout
 
+	out, _ := command.Run(app, args...)
 	if len(out) == 0 {
 		return "", errors.New("Couldn't get root git worktree dir - is this a git dir?")
 	}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/go-cmd/cmd"
+	"github.com/todaatsushi/twt/internal/command"
 )
 
 func HasBranch(branch string, checkedOut bool) bool {
@@ -14,9 +14,7 @@ func HasBranch(branch string, checkedOut bool) bool {
 		args = []string{"show-ref", fmt.Sprintf("refs/heads/%s", branch)}
 	}
 
-	c := cmd.NewCmd(app, args...)
-	<-c.Start()
-	out := c.Status().Stdout
+	out, _ := command.Run(app, args...)
 
 	if !checkedOut {
 		return len(out) > 0
@@ -39,9 +37,7 @@ func HasBranch(branch string, checkedOut bool) bool {
 
 func HasWorktree(branch string) bool {
 	grepCmd := fmt.Sprintf("git worktree list | grep %s", branch)
-	c := cmd.NewCmd("bash", "-c", grepCmd)
-	<-c.Start()
-	out := c.Status().Stdout
+	out, _ := command.Run("bash", "-c", grepCmd)
 	return len(out) > 0
 }
 
@@ -54,7 +50,5 @@ func DeleteBranch(branch string, force bool) {
 	}
 
 	args := []string{"branch", deleteFlag, branch}
-
-	c := cmd.NewCmd(app, args...)
-	<-c.Start()
+	command.Run(app, args...)
 }
