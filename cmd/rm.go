@@ -54,7 +54,13 @@ var removeWorktree = &cobra.Command{
 			color.Red("Can't delete worktree %s as it doesn't exist", branch)
 			return
 		}
-		git.RemoveWorktree(sessionName, branch, force, deleteBranch)
+		errs := git.RemoveWorktree(sessionName, branch, force, deleteBranch)
+		if errs != nil {
+			for _, err := range errs {
+				color.Red(fmt.Sprintf("Error removing worktree: %s", err))
+			}
+			return
+		}
 
 		// Tmux cleanup
 		existingSessions, err := tmux.ListSessions(true)
