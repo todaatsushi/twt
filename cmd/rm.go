@@ -54,8 +54,8 @@ var removeWorktree = &cobra.Command{
 			color.Red("Can't delete worktree %s as it doesn't exist", branch)
 			return
 		}
-		errs := git.RemoveWorktree(sessionName, branch, force, deleteBranch)
-		if errs != nil {
+
+		if errs := git.RemoveWorktree(sessionName, branch, force, deleteBranch); len(errs) > 0 {
 			for _, err := range errs {
 				color.Red(fmt.Sprintf("Error removing worktree: %s", err))
 			}
