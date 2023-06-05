@@ -43,6 +43,16 @@ var goToWorktree = &cobra.Command{
 			return
 		}
 
+		removeSession, err := flags.GetBool("remove-session")
+		if err != nil {
+			color.Red("Error fetching the remove session flag")
+			return
+		}
+		currentSession, err := tmux.GetCurrentSessionName()
+		if err != nil && removeSession {
+			color.Red("Can't remove current session.")
+		}
+
 		// Switch to session if exists
 		sessionName := utils.GenerateSessionNameFromBranch(branch)
 		isNewSession := !tmux.HasSession(sessionName)
@@ -55,6 +65,9 @@ var goToWorktree = &cobra.Command{
 
 		if !isNewSession {
 			tmux.SwitchToSession(sessionName)
+			if removeSession {
+				tmux.KillSession(currentSession)
+			}
 			return
 		}
 
@@ -65,6 +78,9 @@ var goToWorktree = &cobra.Command{
 			tmux.SendKeys(sessionName, changeDirCmd, "Enter")
 			tmux.SendKeys(sessionName, "clear", "Enter")
 			tmux.SwitchToSession(sessionName)
+			if removeSession {
+				tmux.KillSession(currentSession)
+			}
 			return
 		}
 
@@ -97,6 +113,9 @@ var goToWorktree = &cobra.Command{
 
 		if switchSession {
 			tmux.SwitchToSession(sessionName)
+			if removeSession {
+				tmux.KillSession(currentSession)
+			}
 		}
 	},
 }
@@ -107,4 +126,5 @@ func init() {
 	goToWorktree.Flags().BoolP("switch", "s", false, "Switch to session after creation / retrieval.")
 	goToWorktree.Flags().StringP("branch", "b", "", "Branch of which to create a new worktree + session.")
 	goToWorktree.Flags().BoolP("no-scripts", "N", false, "Don't run any scripts in the common files dir if they exist for this command.")
+	goToWorktree.Flags().BoolP("remove-session", "r", false, "Remove current session (not worktree) after.")
 }
