@@ -21,8 +21,22 @@ var commonBase = &cobra.Command{
 		sessionName := "common"
 		hasCommonSession := tmux.HasSession(sessionName)
 
+		flags := cmd.Flags()
+		removeSession, err := flags.GetBool("remove-session")
+		if err != nil {
+			color.Red("Error fetching the remove sesion flag")
+			return
+		}
+		currentSession, err := tmux.GetCurrentSessionName()
+		if err != nil && removeSession {
+			color.Red("Can't remove current session")
+		}
+
 		if hasCommonSession {
 			tmux.SwitchToSession(sessionName)
+			if removeSession {
+				tmux.KillSession(currentSession)
+			}
 			return
 		}
 
@@ -36,7 +50,11 @@ var commonBase = &cobra.Command{
 		cdToCommonCommand := fmt.Sprintf("cd %s", commonFilesDir)
 		tmux.SendKeys(sessionName, cdToCommonCommand, "Enter")
 		tmux.SendKeys(sessionName, "clear", "Enter")
+
 		tmux.SwitchToSession(sessionName)
+		if removeSession {
+			tmux.KillSession(currentSession)
+		}
 	},
 }
 
@@ -132,4 +150,6 @@ func init() {
 
 	// Config topics
 	commonBase.AddCommand(commonInit)
+
+	commonBase.Flags().BoolP("remove-session", "r", false, "Remove current session (not worktree) after.")
 }
