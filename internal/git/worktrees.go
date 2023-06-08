@@ -10,8 +10,11 @@ func RemoveWorktree(name, branch string, force, deleteBranch bool) []string {
 	if force {
 		args = append(args, "--force")
 	}
-	if _, errs := command.Run(app, args...); errs != nil {
-		return errs
+	_, errs := command.Run(app, args...)
+	if errs != nil {
+		if len(errs) != 0 {
+			return errs
+		}
 	}
 
 	if deleteBranch {
