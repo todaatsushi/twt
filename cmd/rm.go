@@ -97,5 +97,5 @@ func init() {
 	rootCmd.AddCommand(removeWorktree)
 	removeWorktree.Flags().BoolP("delete-branch", "d", false, "Remove branch as well as the worktree")
 	removeWorktree.Flags().BoolP("force", "f", false, "Delete the worktree &| branch regardless of unstaged files")
-	removeWorktree.Flags().StringP("branch", "b", "", "Branch of which to create a new worktree + session.")
+	removeWorktree.Flags().StringP("branch", "b", "", "Branch of which to remove a new worktree + session.")
 }
