@@ -80,14 +80,31 @@ var removeWorktree = &cobra.Command{
 			}
 		}
 
-		needToSwitchSession := tmux.HasSession(sessionName) && currentSession == sessionName && len(possibleDestinations) > 0
-		if needToSwitchSession {
-			newSession := strings.ReplaceAll(possibleDestinations[0], "\"", "")
-			if !tmux.HasSession(newSession) {
-				color.Red("Session doesn't exist")
-				return
+		// After
+		nextBranch, err := flags.GetString("target")
+		if err != nil {
+			color.Red("Couldn't fetch next branch without error")
+			return
+		}
+
+		if nextBranch != "" {
+			targetSession := utils.GenerateSessionNameFromBranch(nextBranch)
+			if tmux.HasSession(targetSession) {
+				tmux.SwitchToSession(targetSession)
+			} else {
+				msg := fmt.Sprintf("No session for branch %s. Carrying out default switch.", nextBranch)
+				color.Yellow(msg)
 			}
-			tmux.SwitchToSession(newSession)
+		} else {
+			needToSwitchSession := tmux.HasSession(sessionName) && currentSession == sessionName && len(possibleDestinations) > 0
+			if needToSwitchSession {
+				newSession := strings.ReplaceAll(possibleDestinations[0], "\"", "")
+				if !tmux.HasSession(newSession) {
+					color.Red("Session doesn't exist")
+					return
+				}
+				tmux.SwitchToSession(newSession)
+			}
 		}
 		tmux.KillSession(sessionName)
 	},
@@ -98,4 +115,5 @@ func init() {
 	removeWorktree.Flags().BoolP("delete-branch", "d", false, "Remove branch as well as the worktree")
 	removeWorktree.Flags().BoolP("force", "f", false, "Delete the worktree &| branch regardless of unstaged files")
 	removeWorktree.Flags().StringP("branch", "b", "", "Branch of which to remove a new worktree + session.")
+	removeWorktree.Flags().StringP("target", "t", "", "Where to go after removing session")
 }
