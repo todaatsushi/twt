@@ -80,6 +80,11 @@ Check the viability of using `twt` features:
  - Is this run in a tmux session
  - Are common files set up
 
+## Usage with other tools
+
+You can use regular shell tools like completions & fzf to streamline the development.
+Check out `zsh-examples/bindings` for a sample script, which can speed up workflow.
+
 # Why
 ## Git worktrees
 
