@@ -43,6 +43,17 @@ var removeWorktree = &cobra.Command{
 			return
 		}
 
+		nextBranch, err := flags.GetString("target")
+		if err != nil {
+			color.Red("Couldn't fetch next branch without error")
+			return
+		}
+		targetSession := utils.GenerateSessionNameFromBranch(nextBranch)
+		if !tmux.HasSession(targetSession) {
+			color.Red(fmt.Sprintf("Target session '%s' doesn't exist", targetSession))
+			return
+		}
+
 		// Git cleanup
 		branchExistsAndCheckedOut := git.HasBranch(branch, true)
 		worktreeExists := git.HasWorktree(branch)
@@ -81,28 +92,17 @@ var removeWorktree = &cobra.Command{
 		}
 
 		// After
-		nextBranch, err := flags.GetString("target")
-		if err != nil {
-			color.Red("Couldn't fetch next branch without error")
+		newSession := strings.ReplaceAll(possibleDestinations[0], "\"", "")
+		if !tmux.HasSession(newSession) {
+			color.Red("Session doesn't exist")
 			return
 		}
 
 		if nextBranch != "" {
-			targetSession := utils.GenerateSessionNameFromBranch(nextBranch)
-			if tmux.HasSession(targetSession) {
-				tmux.SwitchToSession(targetSession)
-			} else {
-				msg := fmt.Sprintf("No session for branch %s. Carrying out default switch.", nextBranch)
-				color.Yellow(msg)
-			}
+			tmux.SwitchToSession(targetSession)
 		} else {
 			needToSwitchSession := tmux.HasSession(sessionName) && currentSession == sessionName && len(possibleDestinations) > 0
 			if needToSwitchSession {
-				newSession := strings.ReplaceAll(possibleDestinations[0], "\"", "")
-				if !tmux.HasSession(newSession) {
-					color.Red("Session doesn't exist")
-					return
-				}
 				tmux.SwitchToSession(newSession)
 			}
 		}
