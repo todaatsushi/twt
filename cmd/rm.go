@@ -7,6 +7,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/todaatsushi/twt/internal/checks"
+	"github.com/todaatsushi/twt/internal/command"
 	"github.com/todaatsushi/twt/internal/git"
 	"github.com/todaatsushi/twt/internal/tmux"
 	"github.com/todaatsushi/twt/internal/utils"
@@ -27,6 +28,11 @@ var removeWorktree = &cobra.Command{
 		branch, err := flags.GetString("branch")
 		if err != nil || branch == "" {
 			color.Red("Couldn't fetch target branch.")
+			return
+		}
+		branch, err = command.Validate(branch)
+		if err != nil {
+			color.Red(err.Error())
 			return
 		}
 
