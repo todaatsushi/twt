@@ -3,6 +3,8 @@
 
 `twt` is an interface for managing git worktrees in different tmux sessions.
 
+Built for MacOS.
+
 # Quickstart
 1. Clone a bare repository to work in
 ```
