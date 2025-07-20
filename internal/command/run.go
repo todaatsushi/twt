@@ -12,6 +12,12 @@ type Runner interface {
 	Run(app string, args ...string) (out, err []string)
 }
 
+type Terminal struct{}
+
+func (t Terminal) Run(app string, args ...string) (out, err []string) {
+	return Run(app, args...)
+}
+
 func Run(app string, args ...string) (out, err []string) {
 	// To be deprecated in favor of running in the interface
 	c := cmd.NewCmd(app, args...)
