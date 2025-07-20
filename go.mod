@@ -1,6 +1,6 @@
 module github.com/todaatsushi/twt
 
-go 1.20
+go 1.24.5
 
 require (
 	github.com/fatih/color v1.16.0
