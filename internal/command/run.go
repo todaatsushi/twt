@@ -8,7 +8,12 @@ import (
 	"github.com/go-cmd/cmd"
 )
 
+type Runner interface {
+	Run(app string, args ...string) (out, err []string)
+}
+
 func Run(app string, args ...string) (out, err []string) {
+	// To be deprecated in favor of running in the interface
 	c := cmd.NewCmd(app, args...)
 	<-c.Start()
 
