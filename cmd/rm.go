@@ -24,6 +24,8 @@ var removeWorktree = &cobra.Command{
 			return
 		}
 
+		runner := command.Terminal{}
+
 		flags := cmd.Flags()
 		branch, err := flags.GetString("branch")
 		if err != nil || branch == "" {
@@ -72,7 +74,7 @@ var removeWorktree = &cobra.Command{
 			return
 		}
 
-		if errs := git.RemoveWorktree(sessionName, branch, force, deleteBranch); len(errs) > 0 {
+		if errs := git.RemoveWorktree(runner, sessionName, branch, force, deleteBranch); len(errs) > 0 {
 			for _, err := range errs {
 				color.Red(fmt.Sprintf("Error removing worktree: %s", err))
 			}
