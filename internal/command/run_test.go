@@ -62,3 +62,29 @@ func TestValidate(t *testing.T) {
 		}
 	}
 }
+
+func TestTerminalRunner(t *testing.T) {
+	t.Run("Catch stdout", func(t *testing.T) {
+		runner := command.Terminal{}
+
+		out, err := runner.Run("echo", "Hello, World!")
+		if len(err) > 0 {
+			t.Fatalf("Expected no error but got: %v", err)
+		}
+		if len(out) == 0 || out[0] != "Hello, World!" {
+			t.Fatalf("Expected output 'Hello, World!' but got: %v", out)
+		}
+	})
+
+	t.Run("Catch stderr", func(t *testing.T) {
+		runner := command.Terminal{}
+
+		out, err := runner.Run("sh", "-c", "echo 'Hello, World!' >&2")
+		if len(out) > 0 {
+			t.Fatalf("Expected no stdout output but got: %v", out)
+		}
+		if len(err) == 0 || err[0] != "Hello, World!" {
+			t.Fatalf("Expected stderr output 'Hello, World!' but got: %v", err)
+		}
+	})
+}
