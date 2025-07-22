@@ -6,8 +6,8 @@ import (
 	"github.com/todaatsushi/twt/internal/command"
 )
 
-func InGitDir() bool {
-	out, _ := command.Run("git", "rev-parse", "--is-inside-git-dir")
+func InGitDir(runner command.Runner) bool {
+	out, _ := runner.Run("git", "rev-parse", "--is-inside-git-dir")
 
 	if len(out) > 0 {
 		insideGitDir := out[0]
@@ -18,8 +18,8 @@ func InGitDir() bool {
 	return false
 }
 
-func IsInWorktree() bool {
-	out, _ := command.Run("git", "rev-parse", "--is-inside-work-tree")
+func IsInWorktree(runner command.Runner) bool {
+	out, _ := runner.Run("git", "rev-parse", "--is-inside-work-tree")
 
 	if len(out) > 0 {
 		insideGitWorktree := out[0]
@@ -30,7 +30,7 @@ func IsInWorktree() bool {
 	return false
 }
 
-func IsUsingBareRepo() bool {
-	out, _ := command.Run("bash", "-c", "git worktree list | grep \\(bare\\)")
+func IsUsingBareRepo(runner command.Runner) bool {
+	out, _ := runner.Run("bash", "-c", "git worktree list | grep \\(bare\\)")
 	return len(out) > 0
 }

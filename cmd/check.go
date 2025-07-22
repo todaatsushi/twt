@@ -7,6 +7,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/todaatsushi/twt/internal/checks"
+	"github.com/todaatsushi/twt/internal/command"
 	"github.com/todaatsushi/twt/internal/utils"
 )
 
@@ -22,9 +23,11 @@ func checkTmux() {
 
 func checkGit() {
 	color.White("\u270F Checking git status: must be in a worktree or .git dir.")
-	inGitDir := checks.InGitDir()
-	inWorktree := checks.IsInWorktree()
-	inBareRepo := checks.IsUsingBareRepo()
+	runner := command.Terminal{}
+
+	inGitDir := checks.InGitDir(runner)
+	inWorktree := checks.IsInWorktree(runner)
+	inBareRepo := checks.IsUsingBareRepo(runner)
 	gitValid := inWorktree || inGitDir
 
 	if gitValid && inBareRepo {

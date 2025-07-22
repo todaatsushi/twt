@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/fatih/color"
+	"github.com/todaatsushi/twt/internal/command"
 )
 
 func AssertTmux() error {
@@ -15,11 +16,13 @@ func AssertTmux() error {
 }
 
 func AssertGit() error {
-	isWorktree := IsInWorktree()
-	inGitDir := InGitDir()
+	runner := command.Terminal{}
+
+	isWorktree := IsInWorktree(runner)
+	inGitDir := InGitDir(runner)
 
 	inGit := isWorktree || inGitDir
-	usingBareRepo := IsUsingBareRepo()
+	usingBareRepo := IsUsingBareRepo(runner)
 
 	if valid := inGit && usingBareRepo; !valid {
 		return errors.New("\u2717 Git status invalid - must be in a .git folder (worktree base) or inside a worktree, and in a bare repository.")

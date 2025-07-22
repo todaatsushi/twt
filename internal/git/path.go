@@ -25,9 +25,9 @@ func getBaseFromWorktree(runner command.Runner) (string, error) {
 }
 
 func GetBaseDir(runner command.Runner) (string, error) {
-	if checks.IsInWorktree() {
+	if checks.IsInWorktree(runner) {
 		return getBaseFromWorktree(runner)
-	} else if checks.InGitDir() {
+	} else if checks.InGitDir(runner) {
 		return getGitDir()
 	}
 	return "", errors.New("Not in worktree or git dir.")
