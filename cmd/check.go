@@ -21,9 +21,8 @@ func checkTmux() {
 	}
 }
 
-func checkGit() {
+func checkGit(runner command.Runner) {
 	color.White("\u270F Checking git status: must be in a worktree or .git dir.")
-	runner := command.Terminal{}
 
 	inGitDir := checks.InGitDir(runner)
 	inWorktree := checks.IsInWorktree(runner)
@@ -88,9 +87,10 @@ var healthCheck = &cobra.Command{
 	`,
 	Args: cobra.MatchAll(cobra.ExactArgs(0)),
 	Run: func(cmd *cobra.Command, args []string) {
+		runner := command.Terminal{}
 		color.White("Key conditions checks.")
 		checkTmux()
-		checkGit()
+		checkGit(runner)
 
 		color.White("\n\nOptional conditions checks.")
 		checkCommonFilesDir()
