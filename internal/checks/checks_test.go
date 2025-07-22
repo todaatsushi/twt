@@ -209,3 +209,29 @@ func TestAssertReady(t *testing.T) {
 		}
 	})
 }
+
+func TestAssertTmux(t *testing.T) {
+	t.Run("AssertTmux - in tmux session", func(t *testing.T) {
+		t.Setenv("TMUX", "/path/to/tmux-1337/default,1337,0")
+		if err := AssertTmux(); err != nil {
+			t.Errorf("Expected no error, got %v", err)
+		}
+	})
+
+	t.Run("AssertTmux - not in tmux session", func(t *testing.T) {
+		// Simulate not being in a tmux session
+		t.Setenv("TMUX", "")
+
+		err := AssertTmux()
+		if err == nil {
+			t.Error("Expected an error, got nil")
+		}
+
+		expected := "\u2717 Not in tmux session"
+		actual := err.Error()
+
+		if actual != expected {
+			t.Errorf("Expected error message '%s', got '%s'", expected, actual)
+		}
+	})
+}
