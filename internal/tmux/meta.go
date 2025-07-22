@@ -4,7 +4,7 @@ import (
 	"github.com/todaatsushi/twt/internal/command"
 )
 
-func SendKeys(session string, toSend ...string) {
+func SendKeys(runner command.Runner, session string, toSend ...string) {
 	args := append([]string{"send-keys", "-t", session}, toSend...)
-	command.Run("tmux", args...)
+	runner.Run("tmux", args...)
 }

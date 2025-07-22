@@ -20,28 +20,30 @@ var commonBase = &cobra.Command{
 	Long:  "Create a new session or switch to the session starting in the common files dir.",
 	Run: func(cmd *cobra.Command, args []string) {
 		sessionName := "common"
-		hasCommonSession := tmux.HasSession(sessionName)
+		runner := command.Terminal{}
+
+		hasCommonSession := tmux.HasSession(runner, sessionName)
 
 		flags := cmd.Flags()
 		removeSession, err := flags.GetBool("remove-session")
 		if err != nil {
-			color.Red("Error fetching the remove sesion flag")
+			color.Red("Error fetching the remove session flag")
 			return
 		}
-		currentSession, err := tmux.GetCurrentSessionName()
+		currentSession, err := tmux.GetCurrentSessionName(runner)
 		if err != nil && removeSession {
 			color.Red("Can't remove current session")
 		}
 
 		if hasCommonSession {
-			tmux.SwitchToSession(sessionName)
+			tmux.SwitchToSession(runner, sessionName)
 			if removeSession {
-				tmux.KillSession(currentSession)
+				tmux.KillSession(runner, currentSession)
 			}
 			return
 		}
 
-		tmux.NewSession(sessionName)
+		tmux.NewSession(runner, sessionName)
 
 		commonFilesDir, err := utils.GetCommonFilesDirPath()
 		if err != nil {
@@ -49,12 +51,12 @@ var commonBase = &cobra.Command{
 			return
 		}
 		cdToCommonCommand := fmt.Sprintf("cd %s", commonFilesDir)
-		tmux.SendKeys(sessionName, cdToCommonCommand, "Enter")
-		tmux.SendKeys(sessionName, "clear", "Enter")
+		tmux.SendKeys(runner, sessionName, cdToCommonCommand, "Enter")
+		tmux.SendKeys(runner, sessionName, "clear", "Enter")
 
-		tmux.SwitchToSession(sessionName)
+		tmux.SwitchToSession(runner, sessionName)
 		if removeSession {
-			tmux.KillSession(currentSession)
+			tmux.KillSession(runner, currentSession)
 		}
 	},
 }
