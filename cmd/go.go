@@ -26,13 +26,13 @@ var goToWorktree = &cobra.Command{
 	`,
 	Args: cobra.MatchAll(cobra.ExactArgs(0)),
 	Run: func(cmd *cobra.Command, args []string) {
-		shouldCancel := checks.AssertReady()
+		runner := command.Terminal{}
+
+		shouldCancel := checks.AssertReady(runner)
 		if shouldCancel {
 			color.Red("Error when trying to run command, aborting.")
 			return
 		}
-
-		runner := command.Terminal{}
 
 		flags := cmd.Flags()
 		switchSession, err := flags.GetBool("switch")

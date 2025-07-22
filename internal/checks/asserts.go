@@ -28,10 +28,9 @@ func AssertGit(runner command.Runner) error {
 	return nil
 }
 
-func AssertReady() bool {
+func AssertReady(runner command.Runner) bool {
 	// Init here instead of return in the loop to show all messages
 	shouldCancel := false
-	runner := command.Terminal{}
 
 	gitErr := AssertGit(runner)
 	tmuxErr := AssertTmux()

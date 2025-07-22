@@ -18,13 +18,13 @@ var removeWorktree = &cobra.Command{
 	Short: "Remove a git worktree, tmux session, and optionally the linked branch.",
 	Args:  cobra.MatchAll(cobra.ExactArgs(0)),
 	Run: func(cmd *cobra.Command, args []string) {
-		shouldCancel := checks.AssertReady()
+		runner := command.Terminal{}
+
+		shouldCancel := checks.AssertReady(runner)
 		if shouldCancel {
 			color.Red("Error when trying to run command, aborting.")
 			return
 		}
-
-		runner := command.Terminal{}
 
 		flags := cmd.Flags()
 		branch, err := flags.GetString("branch")

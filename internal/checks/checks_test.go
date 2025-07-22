@@ -187,3 +187,25 @@ func TestAssertGit(t *testing.T) {
 		}
 	})
 }
+
+func TestAssertReady(t *testing.T) {
+	t.Run("AssertReady - all checks pass", func(t *testing.T) {
+		runner := OutRunner{
+			res: []string{"true"},
+		}
+
+		if AssertReady(runner) {
+			t.Error("Expected AssertReady to return false, but it returned true")
+		}
+	})
+
+	t.Run("AssertReady - any check fails", func(t *testing.T) {
+		runner := ErrRunner{
+			errs: []string{"Any error occurred"},
+		}
+
+		if !AssertReady(runner) {
+			t.Error("Expected AssertReady to return true, but it returned false")
+		}
+	})
+}
