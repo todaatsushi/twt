@@ -15,9 +15,7 @@ func AssertTmux() error {
 	return nil
 }
 
-func AssertGit() error {
-	runner := command.Terminal{}
-
+func AssertGit(runner command.Runner) error {
 	isWorktree := IsInWorktree(runner)
 	inGitDir := InGitDir(runner)
 
@@ -33,8 +31,9 @@ func AssertGit() error {
 func AssertReady() bool {
 	// Init here instead of return in the loop to show all messages
 	shouldCancel := false
+	runner := command.Terminal{}
 
-	gitErr := AssertGit()
+	gitErr := AssertGit(runner)
 	tmuxErr := AssertTmux()
 	errs := [2]error{gitErr, tmuxErr}
 

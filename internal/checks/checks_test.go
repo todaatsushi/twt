@@ -1,6 +1,8 @@
 package checks
 
-import "testing"
+import (
+	"testing"
+)
 
 type ErrRunner struct {
 	errs []string
@@ -150,6 +152,38 @@ func TestIsUsingBareRepo(t *testing.T) {
 
 		if actual != expected {
 			t.Errorf("Expected %v, got %v", expected, actual)
+		}
+	})
+}
+
+func TestAssertGit(t *testing.T) {
+	t.Run("AssertGit - valid", func(t *testing.T) {
+		runner := OutRunner{
+			res: []string{"true"},
+		}
+
+		err := AssertGit(runner)
+
+		if err != nil {
+			t.Errorf("Expected no error, got %v", err)
+		}
+	})
+
+	t.Run("AssertGit - invalid", func(t *testing.T) {
+		runner := OutRunner{
+			res: []string{"false"},
+		}
+
+		err := AssertGit(runner)
+		if err == nil {
+			t.Error("Expected an error, got nil")
+		}
+
+		expected := "\u2717 Git status invalid - must be in a .git folder (worktree base) or inside a worktree, and in a bare repository."
+		actual := err.Error()
+
+		if actual != expected {
+			t.Errorf("Expected error message '%s', got '%s'", expected, actual)
 		}
 	})
 }
