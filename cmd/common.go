@@ -6,6 +6,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
+	"github.com/todaatsushi/twt/internal/command"
 	"github.com/todaatsushi/twt/internal/git"
 	"github.com/todaatsushi/twt/internal/tmux"
 	"github.com/todaatsushi/twt/internal/utils"
@@ -73,7 +74,9 @@ var commonInit = &cobra.Command{
 	dir in 'scripts'. Run 'twt check' to see where files should live.
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		baseDir, err := git.GetBaseDir()
+		runner := command.Terminal{}
+
+		baseDir, err := git.GetBaseDir(runner)
 		if err != nil {
 			color.Red(fmt.Sprint(err))
 			return

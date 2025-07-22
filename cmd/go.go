@@ -32,6 +32,8 @@ var goToWorktree = &cobra.Command{
 			return
 		}
 
+		runner := command.Terminal{}
+
 		flags := cmd.Flags()
 		switchSession, err := flags.GetBool("switch")
 		if err != nil {
@@ -63,7 +65,7 @@ var goToWorktree = &cobra.Command{
 		sessionName := utils.GenerateSessionNameFromBranch(branch)
 		isNewSession := !tmux.HasSession(sessionName)
 
-		baseDir, err := git.GetBaseDir()
+		baseDir, err := git.GetBaseDir(runner)
 		if err != nil {
 			color.Red(fmt.Sprint(err))
 			return

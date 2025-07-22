@@ -66,3 +66,44 @@ func TestWorktrees(t *testing.T) {
 		}
 	})
 }
+
+func TestPath(t *testing.T) {
+	t.Run("getBaseFromWorktree - no result", func(t *testing.T) {
+		runner := OutRunner{
+			res: []string{},
+		}
+
+		res, err := getBaseFromWorktree(runner)
+		if err == nil {
+			t.Error("Expected an error, got nil")
+		}
+
+		if res != "" {
+			t.Errorf("Expected empty result, got '%s'", res)
+		}
+
+		expected := "Couldn't get root git worktree dir - is this a git dir?"
+		actual := err.Error()
+
+		if actual != expected {
+			t.Errorf("Expected error message '%s', got '%s'", expected, actual)
+		}
+	})
+
+	t.Run("getBaseFromWorktree - valid result", func(t *testing.T) {
+		path := "/path/to/worktree"
+		expected := "/path/to"
+		runner := OutRunner{
+			res: []string{path},
+		}
+
+		res, err := getBaseFromWorktree(runner)
+		if err != nil {
+			t.Errorf("Expected no error, got '%s'", err.Error())
+		}
+
+		if res != expected {
+			t.Errorf("Expected result '%s', got '%s'", expected, res)
+		}
+	})
+}
