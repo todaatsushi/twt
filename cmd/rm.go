@@ -18,7 +18,9 @@ var removeWorktree = &cobra.Command{
 	Short: "Remove a git worktree, tmux session, and optionally the linked branch.",
 	Args:  cobra.MatchAll(cobra.ExactArgs(0)),
 	Run: func(cmd *cobra.Command, args []string) {
-		shouldCancel := checks.AssertReady()
+		runner := command.Terminal{}
+
+		shouldCancel := checks.AssertReady(runner)
 		if shouldCancel {
 			color.Red("Error when trying to run command, aborting.")
 			return
@@ -55,7 +57,7 @@ var removeWorktree = &cobra.Command{
 			return
 		}
 		targetSession := utils.GenerateSessionNameFromBranch(nextBranch)
-		if !tmux.HasSession(targetSession) {
+		if !tmux.HasSession(runner, targetSession) {
 			color.Red(fmt.Sprintf("Target session '%s' doesn't exist", targetSession))
 			return
 		}
@@ -72,7 +74,7 @@ var removeWorktree = &cobra.Command{
 			return
 		}
 
-		if errs := git.RemoveWorktree(sessionName, branch, force, deleteBranch); len(errs) > 0 {
+		if errs := git.RemoveWorktree(runner, sessionName, branch, force, deleteBranch); len(errs) > 0 {
 			for _, err := range errs {
 				color.Red(fmt.Sprintf("Error removing worktree: %s", err))
 			}
@@ -80,12 +82,12 @@ var removeWorktree = &cobra.Command{
 		}
 
 		// Tmux cleanup
-		existingSessions, err := tmux.ListSessions(true)
+		existingSessions, err := tmux.ListSessions(runner, true)
 		if err != nil {
 			color.Red(fmt.Sprint(err))
 			return
 		}
-		currentSession, err := tmux.GetCurrentSessionName()
+		currentSession, err := tmux.GetCurrentSessionName(runner)
 		if err != nil {
 			color.Red(fmt.Sprint(err))
 			return
@@ -99,20 +101,20 @@ var removeWorktree = &cobra.Command{
 
 		// After
 		newSession := strings.ReplaceAll(possibleDestinations[0], "\"", "")
-		if !tmux.HasSession(newSession) {
+		if !tmux.HasSession(runner, newSession) {
 			color.Red("Session doesn't exist")
 			return
 		}
 
 		if nextBranch != "" {
-			tmux.SwitchToSession(targetSession)
+			tmux.SwitchToSession(runner, targetSession)
 		} else {
-			needToSwitchSession := tmux.HasSession(sessionName) && currentSession == sessionName && len(possibleDestinations) > 0
+			needToSwitchSession := tmux.HasSession(runner, sessionName) && currentSession == sessionName && len(possibleDestinations) > 0
 			if needToSwitchSession {
-				tmux.SwitchToSession(newSession)
+				tmux.SwitchToSession(runner, newSession)
 			}
 		}
-		tmux.KillSession(sessionName)
+		tmux.KillSession(runner, sessionName)
 	},
 }
 

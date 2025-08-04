@@ -26,7 +26,9 @@ var goToWorktree = &cobra.Command{
 	`,
 	Args: cobra.MatchAll(cobra.ExactArgs(0)),
 	Run: func(cmd *cobra.Command, args []string) {
-		shouldCancel := checks.AssertReady()
+		runner := command.Terminal{}
+
+		shouldCancel := checks.AssertReady(runner)
 		if shouldCancel {
 			color.Red("Error when trying to run command, aborting.")
 			return
@@ -54,58 +56,58 @@ var goToWorktree = &cobra.Command{
 			color.Red("Error fetching the remove session flag")
 			return
 		}
-		currentSession, err := tmux.GetCurrentSessionName()
+		currentSession, err := tmux.GetCurrentSessionName(runner)
 		if err != nil && removeSession {
 			color.Red("Can't remove current session.")
 		}
 
 		// Switch to session if exists
 		sessionName := utils.GenerateSessionNameFromBranch(branch)
-		isNewSession := !tmux.HasSession(sessionName)
+		isNewSession := !tmux.HasSession(runner, sessionName)
 
-		baseDir, err := git.GetBaseDir()
+		baseDir, err := git.GetBaseDir(runner)
 		if err != nil {
 			color.Red(fmt.Sprint(err))
 			return
 		}
 
 		if !isNewSession {
-			tmux.SwitchToSession(sessionName)
+			tmux.SwitchToSession(runner, sessionName)
 			if removeSession {
-				tmux.KillSession(currentSession)
+				tmux.KillSession(runner, currentSession)
 			}
 			return
 		}
 
-		tmux.NewSession(sessionName)
+		tmux.NewSession(runner, sessionName)
 		worktreeExists := git.HasWorktree(branch)
 		if worktreeExists {
 			changeDirCmd := fmt.Sprintf("cd %s/%s", baseDir, sessionName)
-			tmux.SendKeys(sessionName, changeDirCmd, "Enter")
-			tmux.SendKeys(sessionName, "clear", "Enter")
-			tmux.SwitchToSession(sessionName)
+			tmux.SendKeys(runner, sessionName, changeDirCmd, "Enter")
+			tmux.SendKeys(runner, sessionName, "clear", "Enter")
+			tmux.SwitchToSession(runner, sessionName)
 			if removeSession {
-				tmux.KillSession(currentSession)
+				tmux.KillSession(runner, currentSession)
 			}
 			return
 		}
 
 		// Change to worktree base to create the worktree here
 		backToBaseDirCmd := fmt.Sprintf("cd %s", baseDir)
-		tmux.SendKeys(sessionName, backToBaseDirCmd, "Enter")
+		tmux.SendKeys(runner, sessionName, backToBaseDirCmd, "Enter")
 
 		branchIsNew := !git.HasBranch(branch, false)
 		if branchIsNew {
 			newWorktreeCmd := fmt.Sprintf("git worktree add %s -b %s", sessionName, branch)
-			tmux.SendKeys(sessionName, newWorktreeCmd, "Enter")
+			tmux.SendKeys(runner, sessionName, newWorktreeCmd, "Enter")
 		} else {
 			newWorktreeCmd := fmt.Sprintf("git worktree add %s %s", sessionName, branch)
-			tmux.SendKeys(sessionName, newWorktreeCmd, "Enter")
+			tmux.SendKeys(runner, sessionName, newWorktreeCmd, "Enter")
 		}
 
 		changeToNewTreeCmd := fmt.Sprintf("cd %s", sessionName)
-		tmux.SendKeys(sessionName, changeToNewTreeCmd, "Enter")
-		tmux.SendKeys(sessionName, "clear", "Enter")
+		tmux.SendKeys(runner, sessionName, changeToNewTreeCmd, "Enter")
+		tmux.SendKeys(runner, sessionName, "clear", "Enter")
 
 		// Execute post init scripts
 		noScripts, err := flags.GetBool("no-scripts")
@@ -118,9 +120,9 @@ var goToWorktree = &cobra.Command{
 		}
 
 		if switchSession {
-			tmux.SwitchToSession(sessionName)
+			tmux.SwitchToSession(runner, sessionName)
 			if removeSession {
-				tmux.KillSession(currentSession)
+				tmux.KillSession(runner, currentSession)
 			}
 		}
 	},

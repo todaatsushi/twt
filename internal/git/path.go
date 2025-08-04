@@ -13,21 +13,21 @@ func getGitDir() (string, error) {
 	return os.Getwd()
 }
 
-func getBaseFromWorktree() (string, error) {
+func getBaseFromWorktree(runner command.Runner) (string, error) {
 	app := "git"
 	args := []string{"rev-parse", "--show-toplevel"}
 
-	out, _ := command.Run(app, args...)
+	out, _ := runner.Run(app, args...)
 	if len(out) == 0 {
 		return "", errors.New("Couldn't get root git worktree dir - is this a git dir?")
 	}
 	return filepath.Dir(out[0]), nil
 }
 
-func GetBaseDir() (string, error) {
-	if checks.IsInWorktree() {
-		return getBaseFromWorktree()
-	} else if checks.InGitDir() {
+func GetBaseDir(runner command.Runner) (string, error) {
+	if checks.IsInWorktree(runner) {
+		return getBaseFromWorktree(runner)
+	} else if checks.InGitDir(runner) {
 		return getGitDir()
 	}
 	return "", errors.New("Not in worktree or git dir.")

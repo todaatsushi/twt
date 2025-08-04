@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/todaatsushi/twt/internal/command"
 	"github.com/todaatsushi/twt/internal/git"
 )
 
 func GetCommonFilesDirPath() (string, error) {
-	baseDir, err := git.GetBaseDir()
+	runner := command.Terminal{}
+	baseDir, err := git.GetBaseDir(runner)
 	if err != nil {
 		return "", err
 	}

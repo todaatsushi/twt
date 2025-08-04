@@ -7,6 +7,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/todaatsushi/twt/internal/checks"
+	"github.com/todaatsushi/twt/internal/command"
 	"github.com/todaatsushi/twt/internal/utils"
 )
 
@@ -20,11 +21,12 @@ func checkTmux() {
 	}
 }
 
-func checkGit() {
+func checkGit(runner command.Runner) {
 	color.White("\u270F Checking git status: must be in a worktree or .git dir.")
-	inGitDir := checks.InGitDir()
-	inWorktree := checks.IsInWorktree()
-	inBareRepo := checks.IsUsingBareRepo()
+
+	inGitDir := checks.InGitDir(runner)
+	inWorktree := checks.IsInWorktree(runner)
+	inBareRepo := checks.IsUsingBareRepo(runner)
 	gitValid := inWorktree || inGitDir
 
 	if gitValid && inBareRepo {
@@ -85,9 +87,10 @@ var healthCheck = &cobra.Command{
 	`,
 	Args: cobra.MatchAll(cobra.ExactArgs(0)),
 	Run: func(cmd *cobra.Command, args []string) {
+		runner := command.Terminal{}
 		color.White("Key conditions checks.")
 		checkTmux()
-		checkGit()
+		checkGit(runner)
 
 		color.White("\n\nOptional conditions checks.")
 		checkCommonFilesDir()
